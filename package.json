@@ -5,14 +5,15 @@
   "author": "Kostya",
   "private": true,
   "engines": {
-    "node": "10.16.0"
+    "node": "10.16.0",
+    "npm": "6.9.0"
   },
   "scripts": {
     "dev": "nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
-    "heroku-postbuild": "npm run build"
+    "heroku-postbuild": "npm run dev"
   },
   "dependencies": {
     "@nuxtjs/pwa": "^2.6.0",
