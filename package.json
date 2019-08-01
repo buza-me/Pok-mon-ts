@@ -4,6 +4,9 @@
   "description": "My rad Nuxt.js project",
   "author": "Kostya",
   "private": true,
+  "engines": {
+    "node": "10.16.0"
+  },
   "scripts": {
     "dev": "nuxt",
     "build": "nuxt build",
