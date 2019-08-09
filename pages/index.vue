@@ -21,7 +21,7 @@ import List from '@/components/List.vue';
         store.commit('pagination/setLimit', 10);
         store.commit('pagination/updateUrl');
         
-        let {count, results} = await fetch(store.getters['pagination/url']).then(response => response.json());
+        let {count, results} = await fetch(store.getters['pagination/url']).then(response => response.json()).catch(console.error);
         results = results.map(item => fetch(item.url).then(response => response.json()).catch(console.error));
 
         store.commit('pagination/setItemCount', count);

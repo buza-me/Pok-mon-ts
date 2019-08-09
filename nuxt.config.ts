@@ -34,17 +34,15 @@ export default {
   /*
   ** Nuxt.js modules
   */
-  modules: [
-    '@nuxtjs/pwa',
-  ],
+ 
   /*
   ** Build configuration
   */
   build: {
-    /*
-    ** You can extend webpack config here
-    */
-    extend(config, ctx) {
+    extend (config, { isClient }) {
+      if (isClient) {
+        config.devtool = 'source-map'
+      }
     }
   }
 }

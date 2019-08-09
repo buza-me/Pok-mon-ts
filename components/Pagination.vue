@@ -72,6 +72,7 @@
             };
             this.setOffset(--number * this.limit);
             this.updateUrl();
+            console.log(this.url)
         }
 
         updatePageList(number: number): void {
@@ -96,7 +97,10 @@
         }
 
         mounted(): void {
-            this.updatePagination(this.currentPage);
+            Vue.nextTick()
+            .then( () => {
+                this.updatePagination(this.currentPage);
+            })
         }
     }
 </script>
