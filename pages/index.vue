@@ -11,11 +11,9 @@
 </template>
 
 <script lang="ts">
-import { Getter, Mutation } from 'vuex-class';
 import { Vue, Component, Watch } from 'vue-property-decorator';
 import Pagination from '@/components/Pagination.vue';
 import List from '@/components/List.vue';
-import { setTimeout } from 'timers';
 
 @Component({
     components: {

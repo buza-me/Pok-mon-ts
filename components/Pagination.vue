@@ -32,9 +32,7 @@
 </template>
 
 <script lang="ts">
-    import { Vue, Component, Watch, Prop, Provide } from 'vue-property-decorator';
-    import { Getter, Mutation } from 'vuex-class';
-import { start } from 'repl';
+    import { Vue, Component, Watch, Prop } from 'vue-property-decorator';
 
     @Component
     export default class Pagination extends Vue {
