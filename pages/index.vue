@@ -37,7 +37,7 @@ export default class MainPage extends Vue {
         localStorage.setItem('page', `${this.page}`);
     }
 
-    async mounted() {
+    async beforeMount() {
 
         const { count } = await fetch(this.url)
             .then(response => response.json())
@@ -69,6 +69,9 @@ export default class MainPage extends Vue {
         ) {
             this.$router.push('/error');
         };
+    }
+
+    async mounted() {
         this.fetchArrayOfPokemonData(this.url);
     }
     
