@@ -92,7 +92,7 @@ export default class List extends Vue {
         justify-content: center;
     }
     ul.tile {
-        grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
     }
     li {
         background: rgba(255, 255, 255, .5);

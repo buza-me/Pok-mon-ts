@@ -10,7 +10,7 @@
                         <li data-value='30'>30</li>
                     </ul>
                 </div>
-                <p>Pokémons per page</p>
+                <p>Pokémons at page</p>
             </div>
             <p class="current-page-message">page {{currentPage}} of {{pageCount}}</p>
         </div>
@@ -216,6 +216,12 @@ import { start } from 'repl';
         .current-page-message {
             padding: .25rem;
             border-radius: 3px;
+        }
+    }
+    @media screen and (max-width: 340px) {
+        .dropdown-block {
+            grid-column-gap: .25rem;
+            padding: .15rem;
         }
     }
 </style>
