@@ -165,7 +165,7 @@
         background: rgba(255, 255, 255, .5);
     }
     li {
-        list-style-type: disc;
+        list-style-type: none;
         font-weight: 600;
     }
     .sublist {
