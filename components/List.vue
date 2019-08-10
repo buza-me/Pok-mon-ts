@@ -58,6 +58,40 @@ export default class List extends Vue {
 </script>
 
 <style scoped>
+    .loader-active-element {
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, .8);
+        box-shadow: 0 0 1rem rgba(0, 0, 0, .8);
+        animation-name: move-horizontal;
+        animation-duration: 2s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+        display: grid;
+        place-content: center center;
+    }
+    .loader-active-sub-element {
+        width: .5rem;
+        height: .5rem;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, .8);
+        box-shadow: 0 0 1rem rgba(0, 0, 0, .8);
+        animation-name: move-diagonal;
+        animation-duration: 2s;
+        animation-iteration-count: infinite;
+        animation-timing-function: ease-in;
+    }
+    @keyframes move-horizontal {
+        0% {transform: translateX(-200%)}
+        50% {transform: translateX(200%)}
+        100% {transform: translateX(-200%)}
+    }
+    @keyframes move-diagonal {
+        0% {transform: translate(-300%, -100%)}
+        50% {transform: translate(300%, 100%)}
+        100% {transform: translate(-300%, -100%)}
+    }
     form {
         display: grid;
         grid-template-columns: auto auto;

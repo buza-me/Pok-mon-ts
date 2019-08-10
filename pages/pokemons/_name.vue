@@ -114,6 +114,8 @@
         align-content: start;
         position: relative;
         perspective: 1000px;
+        min-height: 6rem;
+        min-width: 9rem;
     }
     caption {
         font-weight: 600;
