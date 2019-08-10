@@ -74,6 +74,10 @@ export default class MainPage extends Vue {
     }
     
     async fetchArrayOfPokemonData(url: string): Promise<any> {
+        
+        this.$nextTick(() => {
+            this.$nuxt.$loading.start()
+        });
 
         let { results } = await fetch(url)
             .then(response => response.json())
@@ -84,6 +88,8 @@ export default class MainPage extends Vue {
             .catch(console.error));
 
         this.arrayOfPokemonData = await Promise.all(results);
+
+        this.$nuxt.$loading.finish();
     }
 
     get url(): string {
