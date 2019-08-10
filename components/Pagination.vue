@@ -15,92 +15,99 @@
             <p class="current-page-message">page {{currentPage}} of {{pageCount}}</p>
         </div>
         <ul class="pagination">
-            <li @click="selectPage(1); updatePageList(1)" class="pagination-nav-button">first</li>
-            <li @click="selectPage(currentPage - 1); updatePageList(currentPage)" class="pagination-nav-button">prev.</li>
+            <li @click="selectPage(1)" class="pagination-nav-button">first</li>
+            <li @click="selectPage(currentPage - 1)" class="pagination-nav-button">prev.</li>
             <li 
-                @click="selectPage(pageNumber); updatePageList(pageNumber)" 
+                @click="selectPage(pageNumber)" 
                 v-for="pageNumber in pageList" 
                 :key="pageNumber"
                 :class="{'active': pageNumber === currentPage}"
             >
                 {{pageNumber}}
             </li>
-            <li @click="selectPage(currentPage + 1); updatePageList(currentPage)" class="pagination-nav-button">next</li>
-            <li @click="selectPage(pageCount); updatePageList(pageCount)" class="pagination-nav-button">last</li>
+            <li @click="selectPage(currentPage + 1)" class="pagination-nav-button">next</li>
+            <li @click="selectPage(pageCount)" class="pagination-nav-button">last</li>
         </ul>
     </div>
 </template>
 
 <script lang="ts">
-    import { Vue, Component, Watch } from 'vue-property-decorator';
+    import { Vue, Component, Watch, Prop, Provide } from 'vue-property-decorator';
     import { Getter, Mutation } from 'vuex-class';
+import { start } from 'repl';
 
     @Component
     export default class Pagination extends Vue {
 
-        pagesToDisplayCount: number = 5;
+        countOfPagesToDisplay: number = 5;
+        firstOfPagesToDisplay:number = 1;
         pageList: number[] = [];
         displayDropDown: boolean = false;
+        newPage: number | undefined;
 
-        @Getter('pagination/url') url
-        @Getter('pagination/pageCount') pageCount
-        @Getter('pagination/currentPage') currentPage
-        @Getter('pagination/limit') limit
-        @Getter('pagination/offset') offset
+        @Prop() currentPage!: number;
+        @Prop() itemCount!: number;
+        @Prop() offset!: number;
+        @Prop() limit!: number;
 
-        @Mutation('pagination/setOffset') setOffset
-        @Mutation('pagination/setLimit') setLimit
-        @Mutation('pagination/updateUrl') updateUrl
+        @Watch('currentPage')
+        updatePageList(): void {
 
-        @Watch('limit')
-        onLimitChange(): void {
-            this.updatePagination(this.currentPage);
+            if (!this.pageList.length) {
+                for (let i = 1; i <= this.countOfPagesToDisplay; i++) {
+                    this.pageList.push(i);
+                };
+                return;
+            };
+
+            const lastNumberInPageList = this.pageList[this.pageList.length - 1];
+            const firstNumberInPageList = this.pageList[0];
+
+            if (this.currentPage === lastNumberInPageList || this.currentPage === firstNumberInPageList) {
+                return;
+            }
+            if (this.currentPage > lastNumberInPageList) {
+                this.firstOfPagesToDisplay = Math.floor(this.currentPage / this.countOfPagesToDisplay) * this.countOfPagesToDisplay + 1;
+            }
+            if (this.currentPage < firstNumberInPageList) {
+                this.firstOfPagesToDisplay = Math.floor(this.currentPage / this.countOfPagesToDisplay) * this.countOfPagesToDisplay + 1 - this.countOfPagesToDisplay;
+            }
+            if (this.firstOfPagesToDisplay <= 0) {
+                this.firstOfPagesToDisplay = 1;
+            }
+
+            this.pageList = [];
+            for (let i = this.firstOfPagesToDisplay; i < this.firstOfPagesToDisplay + this.countOfPagesToDisplay; i++) {
+                if (i > this.pageCount) {
+                    continue;
+                };
+                this.pageList.push(i);
+            }
         }
 
         selectLimit({ target }): void {
+
             const newLimit: number = +target.dataset.value;
-            if (this.offset < newLimit) this.setOffset(0);
-            if (this.offset > newLimit) this.setOffset(Math.floor(this.offset! / newLimit!) * newLimit);
-            if (this.offset == newLimit) this.setOffset(newLimit);
-            this.setLimit(newLimit);
-            this.updateUrl();
+            if (this.offset < newLimit) this.newPage = 1;
+            if (this.offset == newLimit) this.newPage = 2;
+            if (this.offset > newLimit) this.newPage = Math.floor(this.offset! / newLimit!) + 1;
+
+            this.$router.push(`/?limit=${newLimit}&page=${this.newPage}`);
         }
 
-        selectPage(number: number): void {
-            if (number < 1 || number > this.pageCount || isNaN(number)) {
+        selectPage(newPage: number): void {
+            if (newPage < 1 || newPage > this.pageCount || isNaN(newPage)) {
                 return;
             };
-            this.setOffset(--number * this.limit);
-            this.updateUrl();
-            console.log(this.url)
+            this.$router.push(`/?limit=${this.limit}&page=${newPage}`);
         }
 
-        updatePageList(number: number): void {
-            if (number < 1 || number > this.pageCount) {
-                return;
-            }
-            const currentBlockOfPages: number = Math.ceil(number / this.pagesToDisplayCount);
-            let pageListOffset: number = currentBlockOfPages * this.pagesToDisplayCount - this.pagesToDisplayCount;
-
-            if (pageListOffset + this.pagesToDisplayCount > this.pageCount) {
-                pageListOffset -= (pageListOffset + this.pagesToDisplayCount) - this.pageCount;
-            }
-            this.pageList = [];
-            for (let i = pageListOffset + 1; i <= pageListOffset + this.pagesToDisplayCount && i <= this.pageCount; i++) {
-                this.pageList.push(i);
-            };
+        get pageCount(): number {
+            return Math.ceil(this.itemCount! / this.limit!);
         }
 
-        updatePagination(number): void {
-            this.selectPage(number);
-            this.updatePageList(number);
-        }
-
-        mounted(): void {
-            Vue.nextTick()
-            .then( () => {
-                this.updatePagination(this.currentPage);
-            })
+        mounted() {
+            this.updatePageList();
         }
     }
 </script>

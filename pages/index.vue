@@ -1,48 +1,104 @@
 <template>
     <div class="container">
-        <pagination></pagination>
+        <pagination
+            :itemCount="itemCount"
+            :currentPage="page"
+            :offset="offset"
+            :limit="limit"
+        ></pagination>
         <list :array-of-pokemon-data="arrayOfPokemonData"></list>
     </div>
 </template>
 
 <script lang="ts">
-import { Getter, Action, namespace } from 'vuex-class';
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
+import { Getter, Mutation } from 'vuex-class';
+import { Vue, Component, Watch } from 'vue-property-decorator';
 import Pagination from '@/components/Pagination.vue';
 import List from '@/components/List.vue';
+import { setTimeout } from 'timers';
 
 @Component({
     components: {
         Pagination,
         List,
     },
-    async fetch({ store }): Promise<any> {
-        store.commit('pagination/setOffset', 0);
-        store.commit('pagination/setLimit', 10);
-        store.commit('pagination/updateUrl');
-        
-        let {count, results} = await fetch(store.getters['pagination/url']).then(response => response.json()).catch(console.error);
-        results = results.map(item => fetch(item.url).then(response => response.json()).catch(console.error));
-
-        store.commit('pagination/setItemCount', count);
-        store.commit('data/setArrayOfPokemonData', await Promise.all(results));
-    }
 })
 
 export default class MainPage extends Vue {
-    
-    @Getter('pagination/url') url
-    @Getter('data/arrayOfPokemonData') arrayOfPokemonData
-    @Action('data/fetchArrayOfPokemonData') fetchArrayOfPokemonData
-    
+
+    arrayOfPokemonData: any[] = [];
+    itemCount: number | null = null;
+    baseUrl: string = 'https://pokeapi.co/api/v2/pokemon/';
+
     @Watch('url')
-    async onUrlChange(): Promise<any> {
-        await this.fetchArrayOfPokemonData(this.url);
+    handleUrlChanges() {
+        this.fetchArrayOfPokemonData(this.url);
+        localStorage.setItem('limit', `${this.limit}`);
+        localStorage.setItem('page', `${this.page}`);
+    }
+
+    async mounted() {
+
+        const { count } = await fetch(this.url)
+            .then(response => response.json())
+            .catch(console.error);
+        this.itemCount = count;
+
+        if (!this.limit || !this.page) {
+
+            let limitFromStorage,
+                pageFromStorage;
+            
+            limitFromStorage = localStorage.getItem('limit') ? +localStorage.getItem('limit')! : null;
+            pageFromStorage = localStorage.getItem('page') ? +localStorage.getItem('page')! : null;
+
+            this.$router.push({
+                path: '/',
+                query: {
+                    limit: `${this.limit || limitFromStorage || 10}`,
+                    page: `${this.page || pageFromStorage || 1}`,
+                },
+            });
+
+        } else if (
+            this.page > this.itemCount! / this.limit ||
+            this.page < 1 ||
+            this.limit % 10 !== 0 ||
+            this.limit < 10 ||
+            this.limit > 30
+        ) {
+            this.$router.push('/error');
+        };
+        this.fetchArrayOfPokemonData(this.url);
+    }
+    
+    async fetchArrayOfPokemonData(url: string): Promise<any> {
+
+        let { results } = await fetch(url)
+            .then(response => response.json())
+            .catch(console.error);
+
+        results = results.map((item) => fetch(item.url)
+            .then(response => response.json())
+            .catch(console.error));
+
+        this.arrayOfPokemonData = await Promise.all(results);
+    }
+
+    get url(): string {
+        return `${this.baseUrl}?offset=${this.offset}&limit=${this.limit}`;
+    }
+
+    get offset(): number {
+        return this.limit! * this.page! - this.limit!;
+    }
+
+    get limit(): number | undefined {
+        return this.$route.query.limit ? +this.$route.query.limit : undefined;
+    }
+
+    get page(): number | undefined {
+        return this.$route.query.page ? +this.$route.query.page : undefined;
     }
 }
 </script>
-
-<style scoped>
-    
-</style>
-

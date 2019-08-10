@@ -1,16 +1,18 @@
 <template>
     <div class="container">
         <div class="card">
-            <figure>
-                <div class="image-container">
-                    <img :src="pokemonDataObject.sprites.front_default" alt="poke">
-                    <img :src="pokemonDataObject.sprites.back_default" alt="poke">
-                </div>
-                <caption>
-                    <span>{{pokemonDataObject.name}}</span>
-                    <nuxt-link to="/">Go to main page</nuxt-link>
-                </caption>
-            </figure>
+            <div class="figure-container">
+                <figure>
+                    <div class="image-container">
+                        <img :src="pokemonDataObject.sprites.front_default" alt="poke">
+                        <img :src="pokemonDataObject.sprites.back_default" alt="poke">
+                    </div>
+                    <caption>
+                        <span>{{pokemonDataObject.name}}</span>
+                    </caption>
+                </figure>
+                <nuxt-link to="/">Go to main page</nuxt-link>
+            </div>
             <div class="stats">
                 <ul>
                     <li>
@@ -96,8 +98,15 @@
         justify-content: start;
         max-width: 35vw;
     }
-    figure {
+    .figure-container {
+        display: grid;
+        place-content: center center;
+        padding: 1rem 0;
+        position: relative;
         background: rgba(255, 255, 255, .3);
+    }
+    figure {
+        background: rgba(255, 255, 255, .5);
         padding: 1rem;
         border-radius: 3px;
         display: grid;
@@ -150,6 +159,7 @@
         border-radius: 3px;
         padding: .25rem 1rem;
         text-transform: none;
+        font-weight: 600;
     }
     a:hover {
         background: rgba(255, 255, 255, .5);

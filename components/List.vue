@@ -40,9 +40,20 @@ import { Vue, Component, Prop } from 'vue-property-decorator';
 
 @Component
 export default class List extends Vue {
+
     @Prop() arrayOfPokemonData!: any[];
 
-    layout: string ='tile';
+    layout: string | null = 'tile'
+
+    beforeMount() {
+        if (window) {
+            this.layout = localStorage.getItem('layout') ? localStorage.getItem('layout') : 'tile';
+        }
+    }
+
+    beforeDestroy() {
+        localStorage.setItem('layout', this.layout!);
+    }
 }
 </script>
 
@@ -77,7 +88,8 @@ export default class List extends Vue {
         grid-gap: 1rem 1rem;
     }
     ul.list {
-        grid-template-columns: 1fr;
+        grid-template-columns: auto;
+        justify-content: center;
     }
     ul.tile {
         grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
@@ -111,7 +123,7 @@ export default class List extends Vue {
         left: 50%;
         transform: translate(-50%, -50%);
         cursor: pointer;
-        background: #f3f3f3;
+        background: rgba(255, 255, 255, .5);
         border-radius: 3px;
         backface-visibility: hidden;
     }
@@ -128,7 +140,6 @@ export default class List extends Vue {
     }
     caption a {
         color: #ffffff;
-        text-decoration: underline;
         text-transform: none;
         font-weight: 600;
         font-size: .8rem;
@@ -146,6 +157,8 @@ export default class List extends Vue {
     }
     ul.list li {
         grid-template-columns: 15rem auto;
+        justify-content: center;
+        padding: 0 1rem 0 0;
     }
     ul.list figure {
         display: grid;
