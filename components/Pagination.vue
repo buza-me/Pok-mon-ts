@@ -58,7 +58,9 @@
                 return;
             }
             if (this.currentPage > lastNumberInPageList) {
-                this.firstOfPagesToDisplay = Math.floor(this.currentPage / this.countOfPagesToDisplay) * this.countOfPagesToDisplay + 1;
+                this.firstOfPagesToDisplay = this.currentPage % this.countOfPagesToDisplay === 0 ?
+                this.currentPage - this.countOfPagesToDisplay + 1 :
+                Math.floor(this.currentPage / this.countOfPagesToDisplay) * this.countOfPagesToDisplay + 1;
             }
             if (this.currentPage < firstNumberInPageList) {
                 this.firstOfPagesToDisplay = Math.floor(this.currentPage / this.countOfPagesToDisplay) * this.countOfPagesToDisplay + 1 - this.countOfPagesToDisplay;
@@ -104,12 +106,11 @@
         }
 
         mounted() {
-            this.$nextTick(() => {
-                for (let i = 1; i <= this.countOfPagesToDisplay; i++) {
-                    this.pageList.push(i);
-                };
-                this.updatePageList();
-            })
+
+            for (let i = 1; i <= this.countOfPagesToDisplay; i++) {
+                this.pageList.push(i);
+            };
+            this.updatePageList();
         }
     }
 </script>
