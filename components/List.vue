@@ -160,6 +160,7 @@ export default class List extends Vue {
         background: rgba(255, 255, 255, .5);
         border-radius: 3px;
         backface-visibility: hidden;
+        max-width: 96px;
     }
     img:last-child {
         transform: translate(-50%, -50%) rotateY(180deg);
