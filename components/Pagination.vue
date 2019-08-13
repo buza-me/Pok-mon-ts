@@ -51,13 +51,6 @@
         @Watch('currentPage')
         updatePageList(): void {
 
-            if (!this.pageList.length) {
-                for (let i = 1; i <= this.countOfPagesToDisplay; i++) {
-                    this.pageList.push(i);
-                };
-                return;
-            };
-
             const lastNumberInPageList = this.pageList[this.pageList.length - 1];
             const firstNumberInPageList = this.pageList[0];
 
@@ -80,7 +73,13 @@
                     continue;
                 };
                 this.pageList.push(i);
-            }
+            };
+            
+        }
+        
+        @Watch('itemCount')
+        init(): void {
+            this.updatePageList();
         }
 
         selectLimit({ target }): void {
@@ -105,7 +104,12 @@
         }
 
         mounted() {
-            this.updatePageList();
+            this.$nextTick(() => {
+                for (let i = 1; i <= this.countOfPagesToDisplay; i++) {
+                    this.pageList.push(i);
+                };
+                this.updatePageList();
+            })
         }
     }
 </script>
