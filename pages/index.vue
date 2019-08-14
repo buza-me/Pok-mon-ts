@@ -1,10 +1,10 @@
 <template>
     <div class="container">
         <pagination
-            :currentPage="+$route.query.page"
-            :limit="+$route.query.limit"
             :itemCount="itemCount"
+            :currentPage="page"
             :offset="offset"
+            :limit="limit"
         ></pagination>
         <list :array-of-pokemon-data="arrayOfPokemonData"></list>
     </div>
@@ -26,8 +26,8 @@ import List from '@/components/List.vue';
             .catch(console.error);
         return {
             itemCount: count,
-            limit: limit || 10,
-            page: page || 1,
+            initialLimit: limit || 10,
+            initialPage: page || 1,
         }
     }
 })
@@ -37,45 +37,69 @@ export default class MainPage extends Vue {
     arrayOfPokemonData: any[] = [];
     itemCount?: number;
     baseUrl: string = 'https://pokeapi.co/api/v2/pokemon/';
-    limit?: number;
-    page?: number;
+    initialLimit?: number;
+    initialPage?: number;
 
+    get url(): string {
+        return `${this.baseUrl}?offset=${this.offset}&limit=${this.limit || this.initialLimit}`;
+    }
+
+    get offset(): number {
+        return this.limit! * this.page! - this.limit!;
+    }
+
+    get limit(): number {
+        return +this.$route.query.limit;
+    }
+
+    get page(): number {
+        return +this.$route.query.page;
+    }
+    
     @Watch('url')
     handleUrlChanges() {
-        if (!this.$route.query.limit || !this.$route.query.page) return;
-
-        localStorage.setItem('limit', `${this.$route.query.limit}`);
-        localStorage.setItem('page', `${this.$route.query.page}`);
+        if (!this.limit || !this.page) return;
         this.fetchArrayOfPokemonData(this.url);
     }
 
+    @Watch('limit')
+    hendleLimitChanges() {
+        localStorage.setItem('limit', `${this.limit}`);
+    }
+
+    @Watch('page')
+    handlePageChanges() {
+        localStorage.setItem('page', `${this.page}`);
+    }
+
     beforeMount() {
-        if (!this.$route.query.limit || !this.$route.query.page) {
+
+        if (!this.limit || !this.page) {
             
-            this.limit = localStorage.getItem('limit') ? +localStorage.getItem('limit')! : this.limit;
-            this.page = localStorage.getItem('page') ? +localStorage.getItem('page')! : this.page;
+            this.initialLimit = localStorage.getItem('limit') ? +localStorage.getItem('limit')! : this.initialPage;
+            this.initialPage = localStorage.getItem('page') ? +localStorage.getItem('page')! : this.initialPage;
 
             this.$router.replace({
                 path: '/',
                 query: {
-                    limit: `${this.limit}`,
-                    page: `${this.page}`,
+                    limit: `${this.initialLimit}`,
+                    page: `${this.initialPage}`,
                 },
             });
 
         } else if (
-            this.page! > Math.ceil(this.itemCount! / this.limit!) ||
-            this.page! < 1 ||
-            this.limit! % 10 !== 0 ||
-            this.limit! < 10 ||
-            this.limit! > 30
+            this.initialPage! > Math.ceil(this.itemCount! / this.initialLimit!) ||
+            this.initialPage! < 1 ||
+            this.initialLimit! % 10 !== 0 ||
+            this.initialLimit! < 10 ||
+            this.initialLimit! > 30
         ) {
             this.$router.replace('/error');
         };
     }
 
     mounted() {
-        if (!this.$route.query.limit || !this.$route.query.page) return;
+        if (!this.limit || !this.page) return;
         this.fetchArrayOfPokemonData(this.url);
     }
 
@@ -96,14 +120,6 @@ export default class MainPage extends Vue {
         this.arrayOfPokemonData = await Promise.all(results);
 
         this.$nuxt.$loading.finish();
-    }
-
-    get url(): string {
-        return `${this.baseUrl}?offset=${this.offset}&limit=${this.$route.query.limit || this.limit}`;
-    }
-
-    get offset(): number {
-        return +this.$route.query.limit! * +this.$route.query.page! - +this.$route.query.limit!;
     }
 }
 </script>
