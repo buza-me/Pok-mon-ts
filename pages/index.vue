@@ -2,7 +2,6 @@
     <div class="container">
         <pagination
             :itemCount="itemCount"
-            :currentPage="page"
             :offset="offset"
             :limit="limit"
         ></pagination>
@@ -20,13 +19,25 @@ import List from '@/components/List.vue';
         Pagination,
         List,
     },
+    async asyncData({ query: { limit, page } }): Promise<any> {
+        const { count } = await fetch('https://pokeapi.co/api/v2/pokemon/')
+            .then(response => response.json())
+            .catch(console.error);
+        return {
+            itemCount: count,
+            limit: limit || 10,
+            page: page || 1,
+        }
+    }
 })
 
 export default class MainPage extends Vue {
 
     arrayOfPokemonData: any[] = [];
-    itemCount: number | null = null;
+    itemCount?: number;
     baseUrl: string = 'https://pokeapi.co/api/v2/pokemon/';
+    limit?: number;
+    page?: number;
 
     @Watch('url')
     handleUrlChanges() {
@@ -35,35 +46,27 @@ export default class MainPage extends Vue {
         localStorage.setItem('page', `${this.page}`);
     }
 
-    async beforeMount() {
+    beforeMount() {
 
-        const { count } = await fetch(this.url)
-            .then(response => response.json())
-            .catch(console.error);
-        this.itemCount = count;
-
-        if (!this.limit || !this.page) {
-
-            let limitFromStorage,
-                pageFromStorage;
+        if (!this.$route.query.limit || !this.$route.query.page) {
             
-            limitFromStorage = localStorage.getItem('limit') ? +localStorage.getItem('limit')! : null;
-            pageFromStorage = localStorage.getItem('page') ? +localStorage.getItem('page')! : null;
+            this.limit = localStorage.getItem('limit') ? +localStorage.getItem('limit')! : this.limit;
+            this.page = localStorage.getItem('page') ? +localStorage.getItem('page')! : this.page;
 
             this.$router.push({
                 path: '/',
                 query: {
-                    limit: `${this.limit || limitFromStorage || 10}`,
-                    page: `${this.page || pageFromStorage || 1}`,
+                    limit: `${this.limit}`,
+                    page: `${this.page}`,
                 },
             });
 
         } else if (
-            this.page > this.itemCount! / this.limit ||
-            this.page < 1 ||
-            this.limit % 10 !== 0 ||
-            this.limit < 10 ||
-            this.limit > 30
+            this.page! > Math.ceil(this.itemCount! / this.limit!) ||
+            this.page! < 1 ||
+            this.limit! % 10 !== 0 ||
+            this.limit! < 10 ||
+            this.limit! > 30
         ) {
             this.$router.push('/error');
         };
@@ -93,19 +96,11 @@ export default class MainPage extends Vue {
     }
 
     get url(): string {
-        return `${this.baseUrl}?offset=${this.offset}&limit=${this.limit}`;
+        return `${this.baseUrl}?offset=${this.offset}&limit=${this.$route.query.limit || this.limit}`;
     }
 
     get offset(): number {
-        return this.limit! * this.page! - this.limit!;
-    }
-
-    get limit(): number | undefined {
-        return this.$route.query.limit ? +this.$route.query.limit : undefined;
-    }
-
-    get page(): number | undefined {
-        return this.$route.query.page ? +this.$route.query.page : undefined;
+        return +this.$route.query.limit! * +this.$route.query.page! - +this.$route.query.limit!;
     }
 }
 </script>

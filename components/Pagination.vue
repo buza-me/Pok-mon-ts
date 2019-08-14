@@ -43,7 +43,6 @@
         displayDropDown: boolean = false;
         newPage: number | undefined;
 
-        @Prop() currentPage!: number;
         @Prop() itemCount!: number;
         @Prop() offset!: number;
         @Prop() limit!: number;
@@ -78,11 +77,6 @@
             };
             
         }
-        
-        @Watch('itemCount')
-        init(): void {
-            this.updatePageList();
-        }
 
         selectLimit({ target }): void {
 
@@ -101,16 +95,20 @@
             this.$router.push(`/?limit=${this.limit}&page=${newPage}`);
         }
 
-        get pageCount(): number {
-            return Math.ceil(this.itemCount! / this.limit!);
-        }
-
         mounted() {
 
             for (let i = 1; i <= this.countOfPagesToDisplay; i++) {
                 this.pageList.push(i);
             };
             this.updatePageList();
+        }
+
+        get pageCount(): number {
+            return Math.ceil(this.itemCount! / this.limit!);
+        }
+
+        get currentPage(): number {
+            return +this.$route.query.page;
         }
     }
 </script>
