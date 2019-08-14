@@ -43,6 +43,7 @@
         displayDropDown: boolean = false;
         newPage: number | undefined;
 
+        @Prop() currentPage!: number;
         @Prop() itemCount!: number;
         @Prop() offset!: number;
         @Prop() limit!: number;
@@ -105,10 +106,6 @@
 
         get pageCount(): number {
             return Math.ceil(this.itemCount! / this.limit!);
-        }
-
-        get currentPage(): number {
-            return +this.$route.query.page;
         }
     }
 </script>

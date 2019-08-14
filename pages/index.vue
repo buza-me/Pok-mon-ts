@@ -1,9 +1,10 @@
 <template>
     <div class="container">
         <pagination
+            :currentPage="+$route.query.page"
+            :limit="+$route.query.limit"
             :itemCount="itemCount"
             :offset="offset"
-            :limit="limit"
         ></pagination>
         <list :array-of-pokemon-data="arrayOfPokemonData"></list>
     </div>
@@ -41,19 +42,20 @@ export default class MainPage extends Vue {
 
     @Watch('url')
     handleUrlChanges() {
+        if (!this.$route.query.limit || !this.$route.query.page) return;
+
+        localStorage.setItem('limit', `${this.$route.query.limit}`);
+        localStorage.setItem('page', `${this.$route.query.page}`);
         this.fetchArrayOfPokemonData(this.url);
-        localStorage.setItem('limit', `${this.limit}`);
-        localStorage.setItem('page', `${this.page}`);
     }
 
     beforeMount() {
-
         if (!this.$route.query.limit || !this.$route.query.page) {
             
             this.limit = localStorage.getItem('limit') ? +localStorage.getItem('limit')! : this.limit;
             this.page = localStorage.getItem('page') ? +localStorage.getItem('page')! : this.page;
 
-            this.$router.push({
+            this.$router.replace({
                 path: '/',
                 query: {
                     limit: `${this.limit}`,
@@ -68,14 +70,15 @@ export default class MainPage extends Vue {
             this.limit! < 10 ||
             this.limit! > 30
         ) {
-            this.$router.push('/error');
+            this.$router.replace('/error');
         };
     }
 
-    async mounted() {
+    mounted() {
+        if (!this.$route.query.limit || !this.$route.query.page) return;
         this.fetchArrayOfPokemonData(this.url);
     }
-    
+
     async fetchArrayOfPokemonData(url: string): Promise<any> {
         
         this.$nextTick(() => {
