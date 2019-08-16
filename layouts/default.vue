@@ -27,6 +27,12 @@ export default class MainLayout extends Vue {
         }
         this.name = '';
     };
+    mounted() {
+        window.onbeforeunload = () => {
+            localStorage.removeItem('limit');
+            localStorage.removeItem('page');
+        }
+    }
 }
 </script>
 
