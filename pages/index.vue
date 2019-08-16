@@ -76,7 +76,7 @@ export default class MainPage extends Vue {
 
         if (!this.limit || !this.page) {
             
-            this.initialLimit = localStorage.getItem('limit') ? +localStorage.getItem('limit')! : this.initialPage;
+            this.initialLimit = localStorage.getItem('limit') ? +localStorage.getItem('limit')! : this.initialLimit;
             this.initialPage = localStorage.getItem('page') ? +localStorage.getItem('page')! : this.initialPage;
 
             this.$router.replace({
