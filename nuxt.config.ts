@@ -20,7 +20,6 @@ export default {
   ** Customize the progress-bar color
   */
  loading: '~/components/loading.vue',
-  loadingIndicator: 'wandering-cubes',
   /*
   ** Global CSS
   */
@@ -34,7 +33,9 @@ export default {
   /*
   ** Nuxt.js modules
   */
- 
+  modules: [
+    ['@nuxtjs/pwa', { icon: false }],
+  ],
   /*
   ** Build configuration
   */

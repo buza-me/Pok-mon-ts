@@ -7,30 +7,28 @@
             <label for="two" :class="{'active': layout === 'list'}">list</label>
         </form>
         <ul :class="layout">
-           <no-ssr>
-                <li v-for="pokemonDataObject in arrayOfPokemonData" :key="pokemonDataObject.id">
-                    <figure>
-                        <nuxt-link :to="`/pokemons/${pokemonDataObject.name}`" class="image-container">
-                            <img :src="pokemonDataObject.sprites.front_default" alt="poke">
-                            <img :src="pokemonDataObject.sprites.back_default" alt="poke">
-                        </nuxt-link>
-                        <caption>
-                            <span>{{pokemonDataObject.name}}</span>
-                            <nuxt-link :to="`/pokemons/${pokemonDataObject.name}`">see more info</nuxt-link>
-                        </caption>
-                    </figure>
-                    <dl>
-                        <dt>base experience:</dt>
-                            <dd>{{pokemonDataObject.base_experience}}</dd>
-                        <dt>height:</dt>
-                            <dd>{{pokemonDataObject.height}}</dd>
-                        <dt>weight:</dt>
-                            <dd>{{pokemonDataObject.weight}}</dd>
-                        <dt>order:</dt>
-                            <dd>{{pokemonDataObject.order}}</dd>
-                    </dl>
-                </li>
-           </no-ssr>
+            <li v-for="pokemonDataObject in arrayOfPokemonData" :key="pokemonDataObject.id">
+                <figure>
+                    <nuxt-link :to="`/pokemons/${pokemonDataObject.name}`" class="image-container">
+                        <img :src="pokemonDataObject.sprites.front_default" alt="poke">
+                        <img :src="pokemonDataObject.sprites.back_default" alt="poke">
+                    </nuxt-link>
+                    <caption>
+                        <span>{{pokemonDataObject.name}}</span>
+                        <nuxt-link :to="`/pokemons/${pokemonDataObject.name}`">see more info</nuxt-link>
+                    </caption>
+                </figure>
+                <dl>
+                    <dt>base experience:</dt>
+                        <dd>{{pokemonDataObject.base_experience}}</dd>
+                    <dt>height:</dt>
+                        <dd>{{pokemonDataObject.height}}</dd>
+                    <dt>weight:</dt>
+                        <dd>{{pokemonDataObject.weight}}</dd>
+                    <dt>order:</dt>
+                        <dd>{{pokemonDataObject.order}}</dd>
+                </dl>
+            </li>
         </ul>
     </div>
 </template>

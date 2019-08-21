@@ -23,7 +23,7 @@ import List from '@/components/List.vue';
     async asyncData({ query: { limit, page } }): Promise<any> {
         const { count } = await fetch('https://pokeapi.co/api/v2/pokemon/')
             .then(response => response.json())
-            .catch(console.error);
+            .catch(console.log);
         return {
             itemCount: count,
             initialLimit: limit || 10,
@@ -111,11 +111,11 @@ export default class MainPage extends Vue {
 
         let { results } = await fetch(url)
             .then(response => response.json())
-            .catch(console.error);
+            .catch(console.log);
 
         results = results.map((item) => fetch(item.url)
             .then(response => response.json())
-            .catch(console.error));
+            .catch(console.log));
 
         this.arrayOfPokemonData = await Promise.all(results);
 

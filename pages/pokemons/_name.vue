@@ -68,10 +68,20 @@
     import { Vue, Component } from 'vue-property-decorator';
 
     @Component({
-        async asyncData({ params: { name } }): Promise<any> {
-            const pokemonDataObject = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`).then(response => response.json()).catch(console.error);
-            let abilities = pokemonDataObject.abilities.map(({ ability }) => fetch(ability.url).then(response => response.json()).catch(console.error));
+        async asyncData({ params: { name }, error }): Promise<any> {
+
+            const pokemonDataObject = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`)
+                .then(response => response.status !== 200 && error({}) || response.json())
+                .catch(console.log);
+
+            let abilities = pokemonDataObject.abilities
+                .map( ({ ability }) => fetch(ability.url)
+                    .then(response => response.json())
+                    .catch(console.log)
+                );
+
             abilities = await Promise.all(abilities);
+
             return {
                 pokemonDataObject,
                 abilities,
