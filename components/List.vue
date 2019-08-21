@@ -10,10 +10,28 @@
             <li v-for="pokemonDataObject in arrayOfPokemonData" :key="pokemonDataObject.id">
                 <figure>
                     <nuxt-link :to="`/pokemons/${pokemonDataObject.name}`" class="image-container">
-                        <img :src="pokemonDataObject.sprites.front_default" alt="poke" @error="handleImageLoadError">
-                        <img :src="pokemonDataObject.sprites.back_default" alt="poke">
-                        <img src="~/assets/images/pokeball.png" alt="poke" v-if="!pokemonDataObject.sprites.back_default">
-                        <img src="~/assets/images/pokeball.png" alt="poke" v-if="!pokemonDataObject.sprites.back_default">
+                        <img 
+                            :src="pokemonDataObject.sprites.front_default" 
+                            alt="poke" 
+                            @error="pokemonDataObject.sprites.back_default = null"
+                            v-if="pokemonDataObject.sprites.back_default"
+                        >
+                        <img 
+                            :src="pokemonDataObject.sprites.back_default" 
+                            alt="poke" 
+                            @error="pokemonDataObject.sprites.back_default = null"
+                            v-if="pokemonDataObject.sprites.back_default"
+                        >
+                        <img 
+                            src="~/assets/images/pokeball.png" 
+                            alt="poke" 
+                            v-if="!pokemonDataObject.sprites.back_default"
+                        >
+                        <img 
+                            src="~/assets/images/pokeball.png" 
+                            alt="poke" 
+                            v-if="!pokemonDataObject.sprites.back_default"
+                        >
                     </nuxt-link>
                     <caption>
                         <span>{{pokemonDataObject.name}}</span>
@@ -44,7 +62,6 @@ export default class List extends Vue {
     @Prop() arrayOfPokemonData!: any[];
 
     layout: string | null = 'tile';
-    // defaultImageSrc: string = '';
 
     beforeMount() {
         if (window) {
