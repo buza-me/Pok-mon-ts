@@ -6,6 +6,8 @@
                     <div class="image-container">
                         <img :src="pokemonDataObject.sprites.front_default" alt="poke">
                         <img :src="pokemonDataObject.sprites.back_default" alt="poke">
+                        <img src="~/assets/images/pokeball.png" alt="poke" v-if="!pokemonDataObject.sprites.back_default">
+                        <img src="~/assets/images/pokeball.png" alt="poke" v-if="!pokemonDataObject.sprites.back_default">
                     </div>
                     <caption>
                         <span>{{pokemonDataObject.name}}</span>
