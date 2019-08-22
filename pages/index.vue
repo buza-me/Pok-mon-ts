@@ -20,14 +20,20 @@ import List from '@/components/List.vue';
         Pagination,
         List,
     },
-    async asyncData({ query: { limit, page } }): Promise<any> {
-        const { count } = await fetch('https://pokeapi.co/api/v2/pokemon/')
+    async asyncData({ query: { limit, page }, redirect }): Promise<any> {
+
+        try {
+            const { count } = await fetch('https://pokeapi.co/api/v2/pokemon/')
             .then(response => response.json())
-            .catch(console.log);
-        return {
-            itemCount: count,
-            initialLimit: limit || 10,
-            initialPage: page || 1,
+
+            return {
+                itemCount: count,
+                initialLimit: limit || 10,
+                initialPage: page || 1,
+            }
+        } catch (error) {
+            console.log(error);
+            redirect('/');
         }
     }
 })
