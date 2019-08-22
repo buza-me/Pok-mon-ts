@@ -109,16 +109,20 @@ export default class MainPage extends Vue {
             this.$nuxt.$loading.start()
         });
 
-        let { results } = await fetch(url)
-            .then(response => response.json())
-            .catch(console.log);
+        try {
+            let { results } = await fetch(url)
+                .then(response => response.json());
 
-        results = results.map((item) => fetch(item.url)
-            .then(response => response.json())
-            .catch(console.log));
+            results = results.map( (item) => 
+                fetch(item.url)
+                .then(response => response.json())
+            );
+            this.arrayOfPokemonData = await Promise.all(results);
 
-        this.arrayOfPokemonData = await Promise.all(results);
-
+        } catch (error) {
+            console.log(error);
+        };
+        
         this.$nuxt.$loading.finish();
     }
 }
